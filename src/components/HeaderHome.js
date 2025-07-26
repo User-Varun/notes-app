@@ -1,8 +1,16 @@
-import { View, Text, StyleSheet, Pressable, StatusBar } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  StatusBar,
+  Image,
+} from "react-native";
 import { verticalScale, scale } from "react-native-size-matters";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import colors from "../colors/colors";
+import colors from "../theme/index";
 import fonts from "../fonts/fonts";
+import images from "../images/images";
 
 export default function HeaderHome() {
   return (
@@ -14,7 +22,7 @@ export default function HeaderHome() {
       <View style={styles.container}>
         <Text style={styles.headerText}>Notes</Text>
         <Pressable style={styles.headerBtn}>
-          <FontAwesome name="search" size={24} color="white" />
+          <Image source={images.searchBtn} style={styles.img} />
         </Pressable>
       </View>
     </>
@@ -45,5 +53,10 @@ const styles = StyleSheet.create({
     fontSize: 43,
     fontWeight: "500",
     fontFamily: fonts.primaryFontFamily,
+  },
+  img: {
+    width: 24,
+    height: 24,
+    color: "#fff",
   },
 });

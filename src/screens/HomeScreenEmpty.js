@@ -4,34 +4,34 @@ import HeaderHome from "../components/HeaderHome";
 import { moderateScale, scale, verticalScale } from "react-native-size-matters";
 import CreateNoteBtn from "../components/CreateNoteBtn";
 
-import colors from "../colors/colors";
 import fonts from "../fonts/fonts";
+import navigationStrings from "../constants/navigationStrings";
+import { globalStyles } from "../styles/globalStyles";
 
-export default function HomeScreenEmpty() {
+export default function HomeScreenEmpty({ navigation }) {
   return (
-    <View style={styles.container}>
+    <View style={[globalStyles.screenContainer, styles.container]}>
       <HeaderHome />
       <View style={styles.imgContainer}>
         <Image
-          source={require("../../assets/empty-homeScreen.png")}
+          source={require("../assets/empty-homeScreen.png")}
           style={styles.img}
         />
         <Text style={styles.imgText}>Create your first note !</Text>
       </View>
-      <CreateNoteBtn />
+      <CreateNoteBtn
+        onPress={() => navigation.navigate(navigationStrings.CREATE_EDIT)}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingVertical: verticalScale(20),
-    backgroundColor: colors.primaryBackground,
     position: "relative",
   },
   imgContainer: {
-    paddingTop: scale(150),
+    flexGrow: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: scale(5),
@@ -42,5 +42,9 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     backgroundColor: "transparent",
   },
-  imgText: { color: "#fff", fontFamily: fonts.primaryFontFamily, fontSize: 20 },
+  imgText: {
+    fontFamily: fonts.primaryFontFamily,
+    fontSize: moderateScale(20), // Use moderateScale for consistency
+    color: "#fff",
+  },
 });

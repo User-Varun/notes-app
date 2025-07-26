@@ -2,11 +2,11 @@ import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 
 import { scale } from "react-native-size-matters";
 
-export default function CreateNoteBtn() {
+export default function CreateNoteBtn({ onPress }) {
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={onPress}>
       <View style={styles.imgContainer}>
-        <Image source={require("../../assets/add.png")} style={styles.img} />
+        <Image source={require("../assets/add.png")} style={styles.img} />
       </View>
     </Pressable>
   );
