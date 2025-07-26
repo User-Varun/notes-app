@@ -1,20 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import colors from "./src/colors/colors";
+import HomeScreenEmpty from "./src/screens/HomeScreenEmpty";
+
+import * as SystemUI from "expo-system-ui";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+  SystemUI.setBackgroundColorAsync(colors.primaryBackground);
+  return <HomeScreenEmpty />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
