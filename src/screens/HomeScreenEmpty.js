@@ -8,7 +8,29 @@ import fonts from "../fonts/fonts";
 import navigationStrings from "../constants/navigationStrings";
 import { globalStyles } from "../styles/globalStyles";
 
+import { useNotes } from "../hooks/useNotes";
+
 export default function HomeScreenEmpty({ navigation }) {
+  const { notes, loading, error } = useNotes();
+
+  // show loading spinner
+  if (loading) {
+    <View style={[globalStyles.screenContainer, styles.centered]}>
+      <ActivityIndicator size="large" color="#fff" />
+      <Text style={styles.loadingText}>Loading notes...</Text>
+    </View>;
+  }
+
+  // Show error message
+  if (error) {
+    return (
+      <View style={[globalStyles.screenContainer, styles.centered]}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+        <CreateNoteBtn title="Retry" onPress={() => fetchNotes()} />
+      </View>
+    );
+  }
+
   return (
     <View style={[globalStyles.screenContainer, styles.container]}>
       <HeaderHome />
