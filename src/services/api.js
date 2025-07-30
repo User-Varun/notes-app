@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.0.1:3000/api/v1";
+const BASE_URL = "http://192.168.29.59:3000/api/v1";
 
 class NotesAPI {
   async getAllNotes() {
@@ -7,9 +7,11 @@ class NotesAPI {
 
       if (!response.ok) throw new Error("Failed to fetch notes");
 
-      return await response.json();
+      const result = await response.json();
+      return result.data;
     } catch (err) {
       console.log("Error fetching notes💥💥💥: ", err);
+      throw err; //
     }
   }
 
@@ -24,9 +26,12 @@ class NotesAPI {
       });
 
       if (!response.ok) throw new Error("Failed to create Note");
-      return await response.json();
+
+      const result = await response.json();
+      return result.data;
     } catch (err) {
       console.error("Error creating note💥💥💥:", err);
+      throw err;
     }
   }
 }

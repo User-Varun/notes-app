@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 
+const BASE_URL = "http://192.168.29.59:3000/api/v1";
 import NotesAPI from "../services/api";
 
 export const useNotes = () => {
@@ -7,14 +8,24 @@ export const useNotes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => fetchNotes(), []);
+  useEffect(() => {
+    fetchNotes();
+  }, []); // will only run one on component mount
 
   const fetchNotes = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await NotesAPI.getAllNotes();
-      setNotes(data);
+
+      const result = await NotesAPI.getAllNotes();
+
+      const transformedNotes = result.map((note) => ({
+        id: note._id,
+        title: note.title,
+        description: note.description,
+      }));
+
+      setNotes(transformedNotes);
     } catch (err) {
       setError(err.message);
     } finally {

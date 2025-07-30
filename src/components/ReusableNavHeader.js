@@ -14,18 +14,23 @@ import { scale } from "react-native-size-matters";
 export default function ReusableNavHeader({
   saveBtn = true,
   editBtn = false,
-  onPress,
+  onPressSave,
+  onPressBack,
+  onPressEdit,
 }) {
   return (
     <View style={{ ...styles.headerContainer }}>
-      <Pressable style={styles.pressable} onPress={onPress}>
+      <Pressable style={styles.pressable} onPress={onPressBack}>
         <Image
           source={images.backBtn}
           style={{ ...styles.img, width: scale(32), height: scale(32) }}
         />
       </Pressable>
 
-      <Pressable style={styles.pressable}>
+      <Pressable
+        style={styles.pressable}
+        onPress={onPressSave ? onPressSave : onPressEdit}
+      >
         <Image
           source={saveBtn ? images.saveBtn : images.editBtn}
           style={styles.img}
