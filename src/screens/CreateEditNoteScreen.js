@@ -1,13 +1,16 @@
-import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
-
+import { View, StyleSheet, TextInput, Alert } from "react-native";
 import ReusableNavHeader from "../components/ReusableNavHeader";
 import { globalStyles, inputStyles } from "../styles/globalStyles";
 import { scale, verticalScale } from "react-native-size-matters";
 import font from "../fonts/fonts";
 import colors from "../theme";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import NotesAPI from "../services/api";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function CreateEditNoteScreen() {
   const navigation = useNavigation();
@@ -15,18 +18,86 @@ export default function CreateEditNoteScreen() {
 
   const [noteSaved, SetnoteSaved] = useState(false);
 
-  const { note, noteId, isEditing } = routes.params;
+  const { note, isEditing, noteId } = routes.params;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  console.log(title, description);
+  // 🔥 Handle hardware back button (Android) and swipe back (iOS)
+  useFocusEffect(
+    React.useCallback(() => {
+      const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+        // Check if we should prevent navigation
+        const hasChanges =
+          title.trim().length > 0 || description.trim().length > 0;
 
-  // 🔥 Update your existing handleSave function to be async
+        if (!hasChanges || noteSaved) {
+          // Allow navigation if no changes or already saved
+          return;
+        }
+
+        // Prevent default behavior only when we have unsaved changes
+        e.preventDefault();
+
+        // Show the alert
+        Alert.alert(
+          "Unsaved Changes",
+          "You have unsaved changes. What would you like to do?",
+          [
+            {
+              text: "Discard",
+              style: "destructive",
+              onPress: () => {
+                console.log("Changes discarded");
+                // Allow navigation to proceed
+                navigation.dispatch(e.data.action);
+              },
+            },
+            {
+              text: "Save",
+              style: "default",
+              onPress: async () => {
+                // 🔥 Save and navigate inline to avoid double alerts
+                try {
+                  if (!title.trim()) {
+                    Alert.alert("Error", "Please enter a title before saving");
+                    return;
+                  }
+
+                  if (!isEditing) {
+                    await NotesAPI.createNote(title, description);
+                    console.log("Created Note successfully!");
+                  } else {
+                    await NotesAPI.updateNote(noteId, title, description);
+                    console.log("Updated Note successfully!");
+                  }
+
+                  // 🔥 Navigate directly without triggering beforeRemove again
+                  navigation.dispatch(e.data.action);
+                } catch (err) {
+                  console.error(err);
+                  Alert.alert(
+                    "Error",
+                    "Failed to save note. Please try again."
+                  );
+                }
+              },
+            },
+          ],
+          { cancelable: true }
+        );
+      });
+
+      return () => {
+        unsubscribe();
+      };
+    }, [navigation, title, description, noteSaved])
+  );
+
   async function handleSave() {
     try {
       // Validate inputs
-      if (!title.trim()) {
+      if (!title.trim() && !isEditing) {
         Alert.alert("Error", "Please enter a title");
         return;
       }
@@ -36,15 +107,12 @@ export default function CreateEditNoteScreen() {
         const newNote = await NotesAPI.createNote(title, description);
         console.log("Created Note successfully!", newNote);
       } else {
-        // // Updating existing note
-        // const updatedNote = await NotesAPI.updateNote(
-        //   noteId,
-        //   title,
-        //   description
-        // );
-        // console.log("Updated Note successfully!", updatedNote);
-
-        console.log("this route is yet to be implemented!");
+        const updatedNote = await NotesAPI.updateNote(
+          noteId,
+          title,
+          description
+        );
+        console.log("Updated Note successfully!", updatedNote);
       }
 
       SetnoteSaved(true);
@@ -56,40 +124,7 @@ export default function CreateEditNoteScreen() {
   }
 
   function handleBack() {
-    if (noteSaved) {
-      // note is saved , user can go back
-      navigation.goBack();
-    } else {
-      // user must save note before
-
-      Alert.alert(
-        "Unsaved Changes",
-        "You have unsaved changes. What whould u like to do?",
-        [
-          {
-            text: "Discard",
-            style: "destructive",
-            onPress: () => {
-              console.log("Changes discarded");
-              navigation.goBack();
-            },
-          },
-          {
-            text: "Save",
-            style: "default",
-            onPress: () => {
-              handleSaveAndGoBack();
-            },
-          },
-          {
-            text: "Cancel",
-            style: "cancel", // Default cancel button
-            onPress: () => console.log("User cancelled"),
-          },
-        ],
-        { cancelable: true } // Android: allow tapping outside to cancel
-      );
-    }
+    navigation.goBack(); // Let beforeRemove handle the alert
   }
 
   async function handleSaveAndGoBack() {
@@ -110,12 +145,21 @@ export default function CreateEditNoteScreen() {
       }
 
       SetnoteSaved(true);
+
+      // 🔥 Navigate back immediately - beforeRemove will see noteSaved as true
       navigation.goBack();
     } catch (err) {
       console.error(err);
       Alert.alert("Error", "Failed to save note. Please try again.");
     }
   }
+
+  useEffect(() => {
+    if (note && isEditing) {
+      setTitle(note.title || "");
+      setDescription(note.description || "");
+    }
+  }, [note, isEditing]);
 
   return (
     <>
@@ -131,7 +175,7 @@ export default function CreateEditNoteScreen() {
           placeholderTextColor="#CCCCCC"
           style={styles.titleInput}
           onChangeText={(noteTitle) => setTitle(noteTitle)}
-          defaultValue={note?.title || title}
+          value={title}
         />
         <TextInput
           placeholder="Type something..."
@@ -139,7 +183,7 @@ export default function CreateEditNoteScreen() {
           multiline={true}
           style={styles.contentInput}
           onChangeText={(noteDescription) => setDescription(noteDescription)}
-          defaultValue={note?.description || description}
+          value={description}
         />
       </View>
     </>

@@ -4,6 +4,7 @@ const images = {
   saveBtn: require("../assets/save-btn.png"),
   searchBtn: require("../assets/search.png"),
   closeBtn: require("../assets/close-btn.png"),
+  noteNotFound: require("../assets/notes-not-found.png"),
 };
 
 export default images;

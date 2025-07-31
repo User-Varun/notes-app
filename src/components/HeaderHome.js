@@ -11,8 +11,11 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import colors from "../theme/index";
 import fonts from "../fonts/fonts";
 import images from "../images/images";
+import navigationStrings from "../constants/navigationStrings";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HeaderHome() {
+  const navigation = useNavigation();
   return (
     <>
       <StatusBar
@@ -21,7 +24,10 @@ export default function HeaderHome() {
       />
       <View style={styles.container}>
         <Text style={styles.headerText}>Notes</Text>
-        <Pressable style={styles.headerBtn}>
+        <Pressable
+          style={styles.headerBtn}
+          onPress={() => navigation.navigate(navigationStrings.SEARCH_NOTE)}
+        >
           <Image source={images.searchBtn} style={styles.img} />
         </Pressable>
       </View>

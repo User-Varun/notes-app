@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  Alert,
 } from "react-native";
 
 import HeaderHome from "../components/HeaderHome";
@@ -18,6 +19,8 @@ import navigationStrings from "../constants/navigationStrings";
 import { globalStyles } from "../styles/globalStyles";
 
 import { useNotes } from "../hooks/useNotes";
+
+import NotesAPI from "../services/api";
 
 export default function HomeScreenEmpty({ navigation }) {
   const { notes, loading, error, fetchNotes } = useNotes();
@@ -74,6 +77,71 @@ export default function HomeScreenEmpty({ navigation }) {
     );
   }
 
+  // 🔥 Handle long press on note
+  const handleLongPress = (note) => {
+    Alert.alert(
+      "Note Options",
+      `What would you like to do with "${note.title}"?`,
+      [
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => confirmDelete(note),
+        },
+        {
+          text: "Edit",
+          style: "default",
+          onPress: () =>
+            navigation.navigate(navigationStrings.CREATE_EDIT, {
+              note: note,
+              noteId: note.id,
+              isEditing: true,
+            }),
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+      ]
+    );
+  };
+
+  // 🔥 Confirm deletion
+  const confirmDelete = (note) => {
+    Alert.alert(
+      "Delete Note",
+      `Are you sure you want to delete "${note.title}"? This action cannot be undone.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deleteNote(note.id),
+        },
+      ]
+    );
+  };
+
+  // 🔥 Delete note function
+  const deleteNote = async (noteId) => {
+    try {
+      await NotesAPI.deleteNote(noteId);
+      console.log("Note deleted successfully!");
+
+      // Refresh the notes list
+      fetchNotes();
+
+      // Show success message
+      Alert.alert("Success", "Note deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      Alert.alert("Error", "Failed to delete note. Please try again.");
+    }
+  };
+
   return (
     <View style={[globalStyles.screenContainer, styles.container]}>
       <HeaderHome />
@@ -90,6 +158,8 @@ export default function HomeScreenEmpty({ navigation }) {
                   note: item,
                 })
               }
+              // 🔥 Add long press handler
+              onLongPress={() => handleLongPress(item)}
             >
               {item.title}
             </Text>

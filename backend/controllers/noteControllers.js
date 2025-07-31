@@ -24,3 +24,41 @@ exports.createNote = async (req, res) => {
     console.log(err);
   }
 };
+
+exports.updateNote = async (req, res) => {
+  try {
+    // find the note
+    const id = req.body.id;
+
+    const updatedNote = await noteModel.findByIdAndUpdate(id, {
+      title: req.body.title,
+      description: req.body.description,
+    });
+
+    if (!updatedNote) return;
+
+    res.status(201).json({
+      status: "success",
+      data: updatedNote,
+    });
+  } catch (err) {
+    console.error("error updating note💥💥💥 notecontroller.js", err);
+  }
+};
+
+exports.deleteNote = async (req, res) => {
+  try {
+    // find the note
+    const id = req.body.id;
+
+    if (!id) return;
+
+    await noteModel.findByIdAndDelete(id);
+
+    res.status(200).json({
+      status: "success",
+    });
+  } catch (err) {
+    console.error("error deleting note💥💥💥 notecontroller.js", err);
+  }
+};

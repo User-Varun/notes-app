@@ -7,6 +7,7 @@ Router.route("/")
   .get(noteController.getAllNotes)
   .post(noteController.createNote);
 
-// get => get all notes , post => create new note
+Router.patch("/updateNote", noteController.updateNote);
+Router.delete("/deleteNote", noteController.deleteNote);
 
 module.exports = Router;
