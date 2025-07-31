@@ -158,13 +158,13 @@ export default function SearchNotes() {
           )}
         </View>
       </View>
-      {/* Search Stats */}
+      {/* Search Stats
       {searchQuery.trim() !== "" && !isSearching && (
         <Text style={styles.searchStats}>
           {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}{" "}
           found
         </Text>
-      )}
+      )} */}
       {/* Search Results */}
       <View style={styles.resultsContainer}>
         {filteredNotes.length > 0 ? (

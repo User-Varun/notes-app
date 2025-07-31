@@ -1,4 +1,4 @@
-const BASE_URL = "http://192.168.29.59:3000/api/v1";
+const BASE_URL = "https://notes-app-api-u247.onrender.com/api/v1";
 
 class NotesAPI {
   async getAllNotes() {

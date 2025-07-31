@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const BASE_URL = "http://192.168.29.59:3000/api/v1";
+const BASE_URL = "https://notes-app-api-u247.onrender.com/api/v1";
 import NotesAPI from "../services/api";
 
 export const useNotes = () => {
