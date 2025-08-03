@@ -5,16 +5,16 @@ import HomeStack from "./HomeStack";
 
 import * as SystemSettings from "expo-system-ui";
 import colors from "../theme";
-import { StatusBar } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
 // create a component
 export default function Routes() {
   SystemSettings.setBackgroundColorAsync(colors.primaryBackground);
 
   return (
-    <>
-      <StatusBar barStyle="default" />
-      <NavigationContainer>{HomeStack()}</NavigationContainer>
-    </>
+    <NavigationContainer>
+      <StatusBar style="dark" />
+      <HomeStack />
+    </NavigationContainer>
   );
 }
