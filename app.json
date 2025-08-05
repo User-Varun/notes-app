@@ -31,6 +31,15 @@
         "projectId": "0f2d5340-b2ad-43d5-ae0b-29fc5bb9fa5f"
       }
     },
-    "owner": "user-varun"
+    "owner": "user-varun",
+    "expo": {
+      "updates": {
+        "enabled": true,
+        "fallbackToCacheTimeout": 0
+      }
+    },
+    "plugins": [
+      "expo-sqlite"
+    ]
   }
 }
