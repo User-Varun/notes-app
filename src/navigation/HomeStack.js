@@ -6,7 +6,6 @@ import {
   DetailedNoteView,
 } from "../screens/index";
 import navigationStrings from "../constants/navigationStrings";
-import EditNoteScreen from "../screens/EditNoteScreen";
 import SearchNotes from "../screens/SearchNotes";
 
 const Stack = createNativeStackNavigator();
@@ -25,11 +24,6 @@ export default function HomeStack() {
       <Stack.Screen
         name={navigationStrings.DETAILED_NOTE}
         component={DetailedNoteView}
-      />
-
-      <Stack.Screen
-        name={navigationStrings.EDIT_NOTE}
-        component={EditNoteScreen}
       />
 
       <Stack.Screen

@@ -28,7 +28,8 @@ class NotesAPI {
       if (!response.ok) throw new Error("Failed to create Note");
 
       const result = await response.json();
-      return result.data;
+      // backend returns { status, result: note }
+      return result.result;
     } catch (err) {
       console.error("Error creating note💥💥💥:", err);
       throw err;

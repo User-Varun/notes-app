@@ -7,7 +7,7 @@ export const globalStyles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: colors.primaryBackground,
-    paddingVertical: verticalScale(20),
+    paddingVertical: verticalScale(15),
   },
 
   // Common Components

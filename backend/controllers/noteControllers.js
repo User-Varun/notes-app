@@ -30,10 +30,14 @@ exports.updateNote = async (req, res) => {
     // find the note
     const id = req.body.id;
 
-    const updatedNote = await noteModel.findByIdAndUpdate(id, {
-      title: req.body.title,
-      description: req.body.description,
-    });
+    const updatedNote = await noteModel.findByIdAndUpdate(
+      id,
+      {
+        title: req.body.title,
+        description: req.body.description,
+      },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedNote) return;
 

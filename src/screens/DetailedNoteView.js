@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import colors from "../theme";
 
 import navigationStrings from "../constants/navigationStrings";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function DetailedNoteView() {
   const navigation = useNavigation();
@@ -24,20 +25,22 @@ export default function DetailedNoteView() {
   }
 
   return (
-    <View style={[globalStyles.screenContainer, styles.container]}>
-      <ReusableNavHeader
-        saveBtn={false}
-        editBtn={true}
-        onPressBack={() => navigation.goBack()}
-        onPressEdit={() => handleEdit()}
-      />
-      <View style={styles.notesContainer}>
-        <Text style={styles.title}>{note?.title || "No Title"}</Text>
-        <Text style={styles.description}>
-          {note?.description || "No Description"}
-        </Text>
+    <SafeAreaView style={[globalStyles.screenContainer, styles.container]}>
+      <View style={styles.container}>
+        <ReusableNavHeader
+          saveBtn={false}
+          editBtn={true}
+          onPressBack={() => navigation.goBack()}
+          onPressEdit={() => handleEdit()}
+        />
+        <View style={styles.notesContainer}>
+          <Text style={styles.title}>{note?.title || "No Title"}</Text>
+          <Text style={styles.description}>
+            {note?.description || "No Description"}
+          </Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -20,6 +20,7 @@ import { useNotes } from "../hooks/useNotes";
 import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import navigationStrings from "../constants/navigationStrings";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SearchNotes() {
   const { notes, loading } = useNotes();
@@ -58,11 +59,6 @@ export default function SearchNotes() {
     });
   };
 
-  const handleNoteLongPress = (note) => {
-    // Add your long press handler here (delete/edit options)
-    console.log("Long pressed note:", note.title);
-  };
-
   const clearSearch = () => {
     setSearchQuery("");
     setFilteredNotes([]);
@@ -71,7 +67,6 @@ export default function SearchNotes() {
     <TouchableOpacity
       style={styles.noteCard}
       onPress={() => handleNotePress(item)}
-      onLongPress={() => handleNoteLongPress(item)}
     >
       <Text style={styles.noteTitle} numberOfLines={1}>
         {highlightSearchText(item.title, searchQuery)}
@@ -139,47 +134,52 @@ export default function SearchNotes() {
   };
 
   return (
-    <View style={[globalStyles.screenContainer, styles.container]}>
-      {/* Search Input */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by the keyword..."
-            placeholderTextColor="#666"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoFocus={true}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-              <FontAwesome name="times-circle" size={20} color="#666" />
-            </TouchableOpacity>
-          )}
+    <SafeAreaView style={[globalStyles.screenContainer]}>
+      <View style={styles.container}>
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search by the keyword..."
+              placeholderTextColor="#666"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              autoFocus={true}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={clearSearch}
+                style={styles.clearButton}
+              >
+                <FontAwesome name="times-circle" size={20} color="#666" />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-      {/* Search Stats
+        {/* Search Stats
       {searchQuery.trim() !== "" && !isSearching && (
         <Text style={styles.searchStats}>
-          {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}{" "}
+        {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}{" "}
           found
         </Text>
       )} */}
-      {/* Search Results */}
-      <View style={styles.resultsContainer}>
-        {filteredNotes.length > 0 ? (
-          <FlatList
-            data={filteredNotes}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderNoteItem}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.listContainer}
-          />
-        ) : (
-          renderEmptyState()
-        )}
+        {/* Search Results */}
+        <View style={styles.resultsContainer}>
+          {filteredNotes.length > 0 ? (
+            <FlatList
+              data={filteredNotes}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderNoteItem}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.listContainer}
+            />
+          ) : (
+            renderEmptyState()
+          )}
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

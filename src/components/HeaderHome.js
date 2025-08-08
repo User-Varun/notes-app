@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: scale(25),
+    paddingBottom: scale(10),
   },
   headerBtn: {
     color: "#fff",
