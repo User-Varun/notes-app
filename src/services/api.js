@@ -1,4 +1,4 @@
-const BASE_URL = "https://notes-app-api-u247.onrender.com/api/v1";
+const BASE_URL = "https://notes-app-react-native-test-db.onrender.com/api/v1";
 
 class NotesAPI {
   async getAllNotes() {
