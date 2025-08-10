@@ -24,6 +24,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import ConfirmModal from "../components/ConfirmModal";
 
+const DESCRIPTION_PREVIEW_WORD_LIMIT = 20;
+
 // Fixed pastel palette (from screenshot) used for note cards
 const CARD_BG_COLORS = [
   "#2E3036", // Slate
@@ -85,9 +87,7 @@ export default function HomeScreenEmpty({ navigation }) {
               source={require("../assets/empty-homeScreen.png")}
               style={styles.img}
             />
-            <Text style={[styles.imgText, { color: "#000" }]}>
-              Create your first note !
-            </Text>
+            <Text style={styles.imgText}>Create your first note !</Text>
           </ScrollView>
         </View>
         <CreateNoteBtn
@@ -124,6 +124,15 @@ export default function HomeScreenEmpty({ navigation }) {
     }
   };
 
+  // Return a truncated preview (by words) with ellipsis when exceeding limit
+  function showDescriptionPreview(text, maxWords = 50) {
+    if (!text) return "";
+    // Normalize whitespace & split into words
+    const words = text.trim().split(/\s+/);
+    if (words.length <= maxWords) return text.trim();
+    return words.slice(0, maxWords).join(" ") + "...";
+  }
+
   return (
     <SafeAreaView style={[globalStyles.screenContainer, styles.container]}>
       <View>
@@ -152,10 +161,11 @@ export default function HomeScreenEmpty({ navigation }) {
                 <Text style={styles.noteTitle}>{item.title}</Text>
                 <View style={styles.cardDivider} />
 
-                <Text style={styles.notePreview}>
-                  {item.description.length < 100
-                    ? item.description
-                    : item.description?.substring(0, 100) + "..."}
+                <Text style={styles.notePreview} numberOfLines={2}>
+                  {showDescriptionPreview(
+                    item.description,
+                    DESCRIPTION_PREVIEW_WORD_LIMIT
+                  )}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -238,7 +248,7 @@ const styles = StyleSheet.create({
   imgText: {
     fontFamily: fonts.primaryFontFamily,
     fontSize: moderateScale(20), // Use moderateScale for consistency
-    color: "#000",
+    color: "#fff",
   },
 
   loadingText: {

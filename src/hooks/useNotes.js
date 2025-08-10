@@ -59,7 +59,7 @@ export const useNotes = () => {
       setNotes((prevNotes) => [updateNote, ...prevNotes]); // add to beginning
 
       console.log("Note Updated Successfully!", updateNote);
-      return updateNote;
+      return updatedNote;
     } catch (err) {
       setError(err.message);
     }
