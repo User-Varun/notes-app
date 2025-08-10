@@ -1,0 +1,12 @@
+# Improvement-1
+
+- changed the color of the text on empty home screen to white (#fff ) ✅
+
+- in detailed note view if the note is long it will overflown and will be cut coz the area is not scrollable ✅
+
+- when we type note ( edit or create ) the notes don't auto scroll when type and due to that the text get hidden under the keyboard ( have to use manual scroll and enter button on keyboard to increase height of text area )  ✅
+
+
+- when we click on back button (if note is unsaved & if we click on cancel of save the note doesn't redirect us to the home page , or maybe it should redirect to the detailed note screen with updated note details )  ✅
+
+- the note description in the homeScreen doesn't get clipped (read me ... ) and when we use space  (and due to this the note height get larger and look weird)  ✅

@@ -1,4 +1,11 @@
-import { View, StyleSheet, TextInput, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import ReusableNavHeader from "../components/ReusableNavHeader";
 import { globalStyles, inputStyles } from "../styles/globalStyles";
 import { scale, verticalScale } from "react-native-size-matters";
@@ -73,8 +80,12 @@ export default function CreateEditNoteScreen() {
         const newNote = await addNote(title, description);
         console.log("Created Note successfully!", newNote);
 
-        // move to the home screen
-        navigation.navigate(navigationStrings.EMPTYHOME);
+        // move to the detailed note (with updated data)
+        navigation.navigate(navigationStrings.DETAILED_NOTE, {
+          note: { title: newNote.title, description: newNote.description },
+          noteId: newNote.id,
+          isEditing: false,
+        });
       } else {
         // const updatedNote = await NotesAPI.updateNote(
         //   noteId,
@@ -86,8 +97,15 @@ export default function CreateEditNoteScreen() {
 
         console.log("Updated Note successfully!", updatedNote);
 
-        // move to the home screen
-        navigation.navigate(navigationStrings.EMPTYHOME);
+        // move to the detailed note (with updated data)
+        navigation.navigate(navigationStrings.DETAILED_NOTE, {
+          note: {
+            title: updatedNote.title,
+            description: updatedNote.description,
+          },
+          noteId: updatedNote.id,
+          isEditing: false,
+        });
       }
 
       SetnoteSaved(true);
@@ -105,29 +123,29 @@ export default function CreateEditNoteScreen() {
     navigation.goBack(); // Let beforeRemove handle the alert
   }
 
-  async function handleSaveAndGoBack() {
-    try {
-      if (!title.trim()) {
-        Alert.alert("Error", "Please enter a title before saving");
-        return;
-      }
+  // async function handleSaveAndGoBack() {
+  //   try {
+  //     if (!title.trim()) {
+  //       Alert.alert("Error", "Please enter a title before saving");
+  //       return;
+  //     }
 
-      if (!isEditing) {
-        // Creating new note
-        // await NotesAPI.createNote(title, description);
-        const result = await addNote(title, description);
-        console.log("Created Note successfully!", result);
-      }
+  //     if (!isEditing) {
+  //       // Creating new note
+  //       // await NotesAPI.createNote(title, description);
+  //       const result = await addNote(title, description);
+  //       console.log("Created Note successfully!", result);
+  //     }
 
-      SetnoteSaved(true);
+  //     SetnoteSaved(true);
 
-      // 🔥 Navigate back immediately - beforeRemove will see noteSaved as true
-      navigation.goBack();
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", "Failed to save note. Please try again.");
-    }
-  }
+  //     // 🔥 Navigate back immediately - beforeRemove will see noteSaved as true
+  //     navigation.goBack();
+  //   } catch (err) {
+  //     console.error(err);
+  //     Alert.alert("Error", "Failed to save note. Please try again.");
+  //   }
+  // }
 
   useEffect(() => {
     if (note && isEditing) {
@@ -137,92 +155,116 @@ export default function CreateEditNoteScreen() {
   }, [note, isEditing]);
 
   return (
-    <SafeAreaView style={[globalStyles.screenContainer]}>
-      <ReusableNavHeader
-        saveBtn={true}
-        editBtn={false}
-        onPressBack={() => handleBack()}
-        onPressSave={() => handleSave()}
-      />
-      <View style={styles.container}>
-        <TextInput
-          placeholder="Title"
-          placeholderTextColor="#CCCCCC"
-          style={styles.titleInput}
-          onChangeText={(noteTitle) => setTitle(noteTitle)}
-          value={title}
+    <SafeAreaView style={[globalStyles.screenContainer, styles.safeArea]}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: 0 })}
+      >
+        <ReusableNavHeader
+          saveBtn={true}
+          editBtn={false}
+          onPressBack={() => handleBack()}
+          onPressSave={() => handleSave()}
         />
-        <TextInput
-          placeholder="Type something..."
-          placeholderTextColor="#CCCCCC"
-          multiline={true}
-          style={styles.contentInput}
-          onChangeText={(noteDescription) => setDescription(noteDescription)}
-          value={description}
-        />
-      </View>
-      <ConfirmModal
-        visible={unsavedVisible}
-        title="Unsaved Changes"
-        message="You have unsaved changes. What would you like to do?"
-        deleteText="Discard"
-        editText="Save"
-        showCancel={false}
-        onDelete={() => {
-          // Discard changes and navigate
-          setUnsavedVisible(false);
-          if (pendingNavAction) navigation.dispatch(pendingNavAction);
-          setPendingNavAction(null);
-        }}
-        onEdit={async () => {
-          try {
-            if (!title.trim()) {
-              Alert.alert("Error", "Please enter a title before saving");
-              return;
-            }
-            if (!isEditing) {
-              const result = await addNote(title, description);
-              console.log("Created Note successfully!", result);
-            } else {
-              const result = await updateNote(noteId, title, description);
-              console.log("Updated Note successfully!", result);
-            }
+        <View style={styles.editorWrapper}>
+          <TextInput
+            placeholder="Title"
+            placeholderTextColor="#666"
+            style={styles.titleInput}
+            onChangeText={(noteTitle) => setTitle(noteTitle)}
+            value={title}
+            returnKeyType="next"
+            blurOnSubmit={false}
+          />
+          <View style={styles.descriptionWrapper}>
+            <TextInput
+              placeholder="Type something..."
+              placeholderTextColor="#666"
+              multiline
+              scrollEnabled
+              style={styles.contentInput}
+              onChangeText={(noteDescription) =>
+                setDescription(noteDescription)
+              }
+              value={description}
+              textAlignVertical="top"
+            />
+          </View>
+        </View>
+        <ConfirmModal
+          visible={unsavedVisible}
+          title="Unsaved Changes"
+          message="You have unsaved changes. What would you like to do?"
+          deleteText="Discard"
+          editText="Save"
+          showCancel={false}
+          onDelete={() => {
             setUnsavedVisible(false);
-            if (pendingNavAction) navigation.dispatch(pendingNavAction);
             setPendingNavAction(null);
-          } catch (err) {
-            console.error(err);
-            Alert.alert("Error", "Failed to save note. Please try again.");
-          }
-        }}
-        onCancel={() => {
-          // no cancel button shown; keep for backdrop press safety
-          setUnsavedVisible(false);
-          setPendingNavAction(null);
-        }}
-      />
+            navigation.navigate(navigationStrings.EMPTYHOME);
+          }}
+          onEdit={async () => {
+            try {
+              if (!title.trim()) {
+                Alert.alert("Error", "Please enter a title before saving");
+                return;
+              }
+              if (!isEditing) {
+                const result = await addNote(title, description);
+                console.log("Created Note successfully!", result);
+              } else {
+                const result = await updateNote(noteId, title, description);
+                console.log("Updated Note successfully!", result);
+              }
+              setUnsavedVisible(false);
+              if (pendingNavAction) navigation.dispatch(pendingNavAction);
+              setPendingNavAction(null);
+            } catch (err) {
+              console.error(err);
+              Alert.alert("Error", "Failed to save note. Please try again.");
+            }
+          }}
+          onCancel={() => {
+            setUnsavedVisible(false);
+            setPendingNavAction(null);
+          }}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "flex-start",
+  safeArea: { flex: 1 },
+  flex: { flex: 1 },
+  editorWrapper: {
+    flex: 1,
     paddingHorizontal: scale(20),
     paddingVertical: scale(10),
+    gap: verticalScale(10),
   },
   titleInput: {
     width: "100%",
-    fontSize: 48,
+    fontSize: 40,
     fontFamily: font.primaryFontFamily,
     color: colors.primaryText,
+    padding: 0,
+    margin: 0,
+  },
+  descriptionWrapper: {
+    flex: 1,
+    width: "100%",
+    borderRadius: scale(8),
   },
   contentInput: {
-    fontSize: 23,
+    flex: 1,
     width: "100%",
-    height: verticalScale(300),
-    flexGrow: 1,
-    textAlignVertical: "top",
+    fontSize: 20,
+    fontFamily: font.primaryFontFamily,
     color: colors.primaryText,
+    padding: 0,
+    margin: 0,
+    minHeight: verticalScale(180), // fallback height before flex takes over
   },
 });
