@@ -26,7 +26,7 @@ export default function DetailedNoteView() {
   }
 
   function handleGoBack() {
-    navigation.goBack();
+    navigation.navigate(navigationStrings.EMPTYHOME);
   }
 
   return (
